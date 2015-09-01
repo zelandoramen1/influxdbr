@@ -400,6 +400,7 @@ influx_query <- function(con,
 }
 
 # method to convert an xts-object to influxdb specific line protocol
+# TODO: Add support of timestamp_format Specifies the timestamp format
 .xts_to_influxdb_line_protocol <- function(xts,
                                            measurement,
                                            digits=5,
@@ -410,10 +411,12 @@ influx_query <- function(con,
   # catch error no XTS object
   if (!xts::is.xts(xts)) stop ("Object is not an xts-object.")
   # catch error NULL colnames
+  # TODO: remove this check. colnames should not be used
   if (any(is.null(colnames(xts)))) stop ("colnames(xts) is NULL.")
   # catch error nrow
   if (nrow(xts)==0) stop ("nrow(xts) is 0.")
 
+  # TODO: Add support of NA - No Data is Data
   # remove rows with NA's only
   xts <- xts[rowSums(is.na(xts))!=ncol(xts), ]
 
@@ -454,6 +457,7 @@ influx_query <- function(con,
                                      sep="="))
 
   # set R's NA values to a dummy string which can be removed easily
+  # TODO: Add support of NA - No Data is Data
   # -> influxdb doesn't handle NA values
   # TODO: What if columnname contains "NA" ?
   values[grepl("NA", values)] <- "NA_to_remove"
